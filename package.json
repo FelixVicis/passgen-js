@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/FelixVicis/passgen-js/issues"
   },
-  "homepage": "https://github.com/FelixVicis/passgen-js#readme"
+  "homepage": "https://github.com/FelixVicis/passgen-js#readme",
+  "dependencies": {
+    "commander": "^7.1.0"
+  }
 }
