@@ -7,28 +7,36 @@ const nanoid = require('./nanoid');
 program
 	.version(config.version)
 	.option('-l, --length <number>', 'Length of the generated string', parseInt('length must be an integer number'), 6)
-	.option('-t, --type <type>', 'Type of generated string, one of: hex, alpha, digits', 'hex');
+	.option('-t, --type <type>', 'Type of generated string, one of: hex, alpha, digits', 'hex')
+	.option('-c, --count <number>', 'Number of ids generated, must be greater than zero', parseInt('count must be an integer number'), 1);
 
 program.parse();
 
 const options = program.opts();
+let generator = null;
 
 switch (options.type) {
 	case 'hex':
 	case 'h':
-		console.log(nanoid.hex(options.length));
+		generator = nanoid.hex;
 		break;
 	case 'alphanumeric':
 	case 'alpha':
 	case 'a':
-		console.log(nanoid.alphanumeric(options.length));
+		generator = nanoid.alphanumeric;
 		break;
 	case 'digits':
 	case 'd':
-		console.log(nanoid.numeric(options.length));
+		generator = nanoid.numeric;
 		break;
 	default:
 		break;
+}
+
+if (generator) {
+	for (let i = 0; i < options.count; i++) {
+		console.log(generator(options.length));
+	}
 }
 
 function parseInt(message) {
