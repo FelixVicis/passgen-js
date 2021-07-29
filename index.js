@@ -8,7 +8,8 @@ program
 	.version(config.version)
 	.option('-l, --length <number>', 'Length of the generated string', parseInt('length must be an integer number'), 6)
 	.option('-t, --type <type>', 'Type of generated string, one of: hex, alpha, digits', 'hex')
-	.option('-c, --count <number>', 'Number of ids generated, must be greater than zero', parseInt('count must be an integer number'), 1);
+	.option('-c, --count <number>', 'Number of ids generated, must be greater than zero', parseInt('count must be an integer number'), 1)
+	.option('-p, --prefix <string>', 'String to prefix ids with', '');
 
 program.parse();
 
@@ -35,7 +36,7 @@ switch (options.type) {
 
 if (generator) {
 	for (let i = 0; i < options.count; i++) {
-		console.log(generator(options.length));
+		console.log(`${options.prefix}${generator(options.length)}`);
 	}
 }
 
