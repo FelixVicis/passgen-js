@@ -1,15 +1,19 @@
 const crypto = require('crypto');
 const defaultLength = 6;
 const languages = {
-	hex     : '0123456789ABCDEF',
-	numeric : '0123456789',
-	clean   : 'BCDFGHJKMNPQRSTUVWXYZ2346789',
+	hex          : '0123456789ABCDEF',
+	numeric      : '0123456789',
+	clean        : 'BCDFGHJKMNPQRSTUVWXYZ2346789',
+	insensitive  : 'bcdfghjkmnpqrstuvwxyzBCDFGHJKMNPQRSTUVWXYZ2346789',
+	alphanumeric : 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
 };
 
 module.exports = nanoid;
 
 nanoid.hex = hex;
 nanoid.numeric = numeric;
+nanoid.clean = clean;
+nanoid.insensitive = insensitive;
 nanoid.alphanumeric = alphanumeric;
 
 function nanoid(length = defaultLength) {
@@ -24,8 +28,16 @@ function numeric(length = defaultLength) {
 	return generateStringFromLanguage(length, languages.numeric);
 }
 
-function alphanumeric(length = defaultLength) {
+function clean(length = defaultLength) {
 	return generateStringFromLanguage(length, languages.clean);
+}
+
+function insensitive(length = defaultLength) {
+	return generateStringFromLanguage(length, languages.insensitive);
+}
+
+function alphanumeric(length = defaultLength) {
+	return generateStringFromLanguage(length, languages.alphanumeric);
 }
 
 function generateStringFromLanguage(length = 8, lang = '0123456789ABCDEF') {
