@@ -3,11 +3,12 @@ const config = require('./package.json');
 const commander = require('commander');
 const program = commander.program;
 const nanoid = require('./nanoid');
+const uuid = require('uuid');
 
 program
 	.version(config.version)
 	.option('-l, --length <number>', 'Length of the generated string', parseInt('length must be an integer number'), 6)
-	.option('-t, --type <type>', 'Type of generated string, one of: hex, alpha, digits, insensitive, base36', 'hex')
+	.option('-t, --type <type>', 'Type of generated string, one of: hex, alpha, digits, insensitive, base36, uuid', 'hex')
 	.option('-c, --count <number>', 'Number of ids generated, must be greater than zero', parseInt('count must be an integer number'), 1)
 	.option('-p, --prefix <string>', 'String to prefix ids with', '');
 
@@ -39,6 +40,12 @@ switch (options.type) {
 	case 'digits':
 	case 'd':
 		generator = nanoid.numeric;
+		break;
+	case 'uuidv4':
+	case 'uuid':
+	case 'u':
+		options.prefix = '';
+		generator = () => uuid.v4();
 		break;
 	default:
 		break;

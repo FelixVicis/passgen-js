@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/FelixVicis/passgen-js#readme",
   "dependencies": {
-    "commander": "^7.1.0"
+    "commander": "^7.1.0",
+    "uuid": "^8.3.2"
   }
 }
