@@ -5,6 +5,7 @@ const languages = {
 	numeric      : '0123456789',
 	clean        : 'BCDFGHJKMNPQRSTUVWXYZ2346789',
 	insensitive  : 'bcdfghjkmnpqrstuvwxyzBCDFGHJKMNPQRSTUVWXYZ2346789',
+	lower        : 'bcdfghjkmnpqrstuvwxyz2346789',
 	alphanumeric : 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
 };
 
