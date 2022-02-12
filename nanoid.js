@@ -10,34 +10,19 @@ const languages = {
 
 module.exports = nanoid;
 
-nanoid.hex = hex;
-nanoid.numeric = numeric;
-nanoid.clean = clean;
-nanoid.insensitive = insensitive;
-nanoid.alphanumeric = alphanumeric;
+Object.entries(languages)
+	.forEach(([key, language]) => {
+		nanoid[key] = generate(language);
+	});
 
 function nanoid(length = defaultLength) {
 	return hex(length);
 }
 
-function hex(length = defaultLength) {
-	return generateStringFromLanguage(length, languages.hexadecimal);
-}
-
-function numeric(length = defaultLength) {
-	return generateStringFromLanguage(length, languages.numeric);
-}
-
-function clean(length = defaultLength) {
-	return generateStringFromLanguage(length, languages.clean);
-}
-
-function insensitive(length = defaultLength) {
-	return generateStringFromLanguage(length, languages.insensitive);
-}
-
-function alphanumeric(length = defaultLength) {
-	return generateStringFromLanguage(length, languages.alphanumeric);
+function generate(language) {
+	return function (length = defaultLength) {
+		return generateStringFromLanguage(length, language);
+	}
 }
 
 function generateStringFromLanguage(length = 8, lang = '0123456789ABCDEF') {
