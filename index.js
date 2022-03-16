@@ -11,7 +11,9 @@ program
 	.option('-t, --type <type>', 'Type of generated string, one of: hex, alpha, digits, insensitive, lower, base36, uuid', 'hex')
 	.option('-c, --count <number>', 'Number of ids generated, must be greater than zero', parseInt('count must be an integer number'), 1)
 	.option('-p, --prefix <string>', 'String to prefix ids with', '')
-	.option('-pp, --postfix <string>', 'String to postfix ids with', '');
+	.option('-pp, --postfix <string>', 'String to postfix ids with', '')
+	.option('--pipe', 'Print pipe safe', !process.stdout.isTTY)
+	.option('--no-pipe', 'Prints with trailing newline');
 
 program.parse();
 
@@ -58,9 +60,20 @@ switch (options.type) {
 }
 
 if (generator) {
+	const list = [];
+
 	for (let i = 0; i < options.count; i++) {
-		console.log(`${options.prefix}${generator(options.length)}${options.postfix}`);
+		list.push(`${options.prefix}${generator(options.length)}${options.postfix}`);
 	}
+
+	list.forEach((item, i) => {
+		if (options.pipe) {
+			if (i > 0) { process.stdout.write('\n'); }
+			process.stdout.write(item);
+		} else {
+			console.log(item);
+		}
+	})
 }
 
 function parseInt(message) {
