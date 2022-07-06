@@ -25,6 +25,10 @@ let generator = null;
 switch (options.type) {
 	case 'hex':
 	case 'h':
+		generator = nanoid.lhex;
+		break;
+	case 'HEX':
+	case 'H':
 		generator = nanoid.hex;
 		break;
 	case 'alphanumeric':

@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const defaultLength = 6;
 const languages = {
 	hex          : '0123456789ABCDEF',
+	lhex         : '0123456789abcdef',
 	numeric      : '0123456789',
 	clean        : 'BCDFGHJKMNPQRSTUVWXYZ2346789',
 	insensitive  : 'bcdfghjkmnpqrstuvwxyzBCDFGHJKMNPQRSTUVWXYZ2346789',
