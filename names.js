@@ -19,7 +19,7 @@ function firstname() {
 	if (!cache.first)
 		cache.first = fjson('./pub/firstnames.json');
 
-	const i = csprng(0,cache.first.length);
+	const i = csprng(0, cache.first.length - 1);
 
 	return cache.first[i] || firstname();
 }
@@ -27,7 +27,7 @@ function lastname() {
 	if (!cache.last)
 		cache.last = fjson('./pub/surnames.json');
 
-	const i = csprng(0,cache.last.length);
+	const i = csprng(0, cache.last.length - 1);
 
 	return cache.last[i] || lastname();
 }
