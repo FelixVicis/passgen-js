@@ -82,6 +82,7 @@ switch (options.type) {
 		generator = () => nameGen.last();
 		break;
 	default:
+		console.warn(`Unknown generator '${options.type}'`);
 		break;
 }
 
