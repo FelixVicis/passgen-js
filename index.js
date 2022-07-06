@@ -52,6 +52,7 @@ switch (options.type) {
 		break;
 	case 'lower':
 	case 'll':
+	case 'l':
 		generator = nanoid.lower;
 		break;
 	case 'uuidv4':
