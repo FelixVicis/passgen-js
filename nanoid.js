@@ -18,7 +18,7 @@ Object.entries(languages)
 	});
 
 function nanoid(length = defaultLength) {
-	return hex(length);
+	return nanoid.hex(length);
 }
 
 function generate(language) {
