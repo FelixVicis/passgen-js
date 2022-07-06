@@ -5,6 +5,7 @@ const program = commander.program;
 const nanoid = require('./nanoid');
 const uuid = require('uuid');
 const sha = require('./hash');
+const nameGen = require('./names');
 
 program
 	.version(config.version)
@@ -59,6 +60,22 @@ switch (options.type) {
 	case 'sha256':
 	case 'sha':
 		generator = () => sha();
+		break;
+	case 'name':
+	case 'n':
+		generator = () => nameGen();
+		break;
+	case 'firstname':
+	case 'first':
+	case 'fn':
+		generator = () => nameGen.first();
+		break;
+	case 'lastname':
+	case 'last':
+	case 'surname':
+	case 'ln':
+		generator = () => nameGen.last();
+		break;
 	default:
 		break;
 }
