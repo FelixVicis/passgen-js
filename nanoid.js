@@ -17,15 +17,15 @@ Object.entries(languages)
 		nanoid[key] = generate(language);
 	});
 
-function nanoid(length = defaultLength) {
-	return nanoid.hex(length);
-}
+nanoid['custom'] = (length, language) => generateStringFromLanguage(Number.parseInt(length, 10), language);
 
-nanoid['custom'] = (length, language) => generateStringFromLanguage(length, language);
+function nanoid(length = defaultLength) {
+	return nanoid.hex(Number.parseInt(length));
+}
 
 function generate(language) {
 	return function (length = defaultLength) {
-		return generateStringFromLanguage(length, language);
+		return generateStringFromLanguage(Number.parseInt(length, 10), language);
 	}
 }
 
