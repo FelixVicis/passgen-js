@@ -29,8 +29,6 @@ if (options.language)
 if (options.format)
 	options.type = 'fmt';
 
-console.log(`index.js:32 options.type = ${options.type}`);
-
 let generator = null;
 
 switch (options.type) {
