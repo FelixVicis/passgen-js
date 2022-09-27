@@ -21,6 +21,8 @@ function nanoid(length = defaultLength) {
 	return nanoid.hex(length);
 }
 
+nanoid['custom'] = (length, language) => generateStringFromLanguage(length, language);
+
 function generate(language) {
 	return function (length = defaultLength) {
 		return generateStringFromLanguage(length, language);

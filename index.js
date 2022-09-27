@@ -15,11 +15,16 @@ program
 	.option('-p, --prefix <string>', 'String to prefix ids with', '')
 	.option('-pp, --postfix <string>', 'String to postfix ids with', '')
 	.option('--pipe', 'Print pipe safe', !process.stdout.isTTY)
-	.option('--no-pipe', 'Prints with trailing newline');
+	.option('--no-pipe', 'Prints with trailing newline')
+	.option('--language <string>', 'Custom Language string to use');
 
 program.parse();
 
 const options = program.opts();
+
+if (options.language)
+	options.type = 'custom';
+
 let generator = null;
 
 switch (options.type) {
@@ -81,6 +86,10 @@ switch (options.type) {
 	case 'ln':
 		generator = () => nameGen.last();
 		break;
+
+	case 'custom':
+		generator = l => nanoid.custom(l, expandLanguage(options.language));
+		break;
 	default:
 		console.warn(`Unknown generator '${options.type}'`);
 		break;
@@ -119,5 +128,26 @@ function parseList(possible, message) {
 		if (possible.includes(value)) return value;
 
 		throw new commander.InvalidOptionArgumentError(message);
+	}
+}
+
+function expandLanguage(language) {
+	const reRun = /([0-9])\-([1-9])|([a-z])\-([b-z])|([A-Z])\-([B-Z])/g
+
+	return language.replace(reRun, (match) => {
+		const [left, right] = match.split('-');
+		if (left >= right) return match;
+
+		return srange(left, right);
+	});
+
+	function srange(left, right) {
+		const l = right.codePointAt() - left.codePointAt() + 1;
+		const base = left.codePointAt();
+
+		return new Array(l)
+			.fill(base)
+			.map((b,i) => String.fromCharCode(b+i))
+			.join('');
 	}
 }
