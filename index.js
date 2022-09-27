@@ -6,17 +6,19 @@ const nanoid = require('./nanoid');
 const uuid = require('uuid');
 const sha = require('./hash');
 const nameGen = require('./names');
+const fmtGen = require('./format-generator');
 
 program
 	.version(config.version)
 	.option('-l, --length <number>', 'Length of the generated string', parseInt('length must be an integer number'), 6)
-	.option('-t, --type <type>', 'Type of generated string, one of: hex, alpha, digits, insensitive, lower, base36, uuid, sha256', 'hex')
+	.option('-t, --type <type>', 'Type of generated string, one of: hex, alpha, digits, insensitive, lower, base36, uuid, sha256, fmt', 'hex')
 	.option('-c, --count <number>', 'Number of ids generated, must be greater than zero', parseInt('count must be an integer number'), 1)
 	.option('-p, --prefix <string>', 'String to prefix ids with', '')
 	.option('-pp, --postfix <string>', 'String to postfix ids with', '')
 	.option('--pipe', 'Print pipe safe', !process.stdout.isTTY)
 	.option('--no-pipe', 'Prints with trailing newline')
-	.option('--language <string>', 'Custom Language string to use');
+	.option('--language <string>', 'Custom Language string to use')
+	.option('--format <string>', 'Format String for complex generation');
 
 program.parse();
 
@@ -24,6 +26,10 @@ const options = program.opts();
 
 if (options.language)
 	options.type = 'custom';
+if (options.format)
+	options.type = 'fmt';
+
+console.log(`index.js:32 options.type = ${options.type}`);
 
 let generator = null;
 
@@ -89,6 +95,10 @@ switch (options.type) {
 
 	case 'custom':
 		generator = l => nanoid.custom(l, expandLanguage(options.language));
+		break;
+	case 'fmt':
+		if (options.format)
+			generator = () => fmtGen(options.format);
 		break;
 	default:
 		console.warn(`Unknown generator '${options.type}'`);
