@@ -6,6 +6,7 @@ const generators = {
 	get sha() { return require('./hash').shaFromValue },
 	get rsha() { return require('./hash') },
 	get uuid() { return require('uuid').v4 },
+	get choose() { return require('./choice-generator') },
 }
 
 const re = {
