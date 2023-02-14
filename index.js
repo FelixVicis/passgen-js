@@ -2,6 +2,7 @@
 const config = require('./package.json');
 const commander = require('commander');
 const program = commander.program;
+const helptext = require('./text.json');
 const nanoid = require('./nanoid');
 const uuid = require('uuid');
 const sha = require('./hash');
@@ -19,6 +20,8 @@ program
 	.option('--no-pipe', 'Prints with trailing newline')
 	.option('--language <string>', 'Custom Language string to use')
 	.option('--format <string>', 'Format String for complex generation');
+
+program.addHelpText('after',helptext.helpTextAfterGenerators + helptext.helpTextAfterFmt);
 
 program.parse();
 
@@ -44,7 +47,10 @@ switch (options.type) {
 	case 'alpha':
 	case 'clean':
 	case 'a':
-		generator = nanoid.clean;
+	case 'lower':
+	case 'll':
+	case 'l':
+		generator = nanoid.lower;
 		break;
 	case 'insensitive':
 	case 'insen':
@@ -59,10 +65,16 @@ switch (options.type) {
 	case 'd':
 		generator = nanoid.numeric;
 		break;
-	case 'lower':
-	case 'll':
-	case 'l':
-		generator = nanoid.lower;
+	case 'upper':
+		generator = nanoid.clean;
+		break;
+	case 'unicode':
+	case 'uni':
+		generator = nanoid.unicode;
+		break;
+	case 'symbols':
+	case 'sym':
+		generator = nanoid.symbols;
 		break;
 	case 'uuidv4':
 	case 'uuid':

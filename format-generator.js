@@ -7,10 +7,11 @@ const generators = {
 	get rsha() { return require('./hash') },
 	get uuid() { return require('uuid').v4 },
 	get choose() { return require('./choice-generator') },
+	get count() { return require('./counter-generator') },
 }
 
 const re = {
-	single : /(?<domain>[a-z\-]+)(?:\.(?<fn>[a-z\-]+))?(?:\((?<params>[a-z0-9\-,\. ]*)\))/gi,
+	single : /(?<domain>[a-z\-]+)(?:\.(?<fn>[a-z\-]+))?(?:\((?<params>[ a-z0-9\-\_\,\.\?\~\`\!\@\#\$\%\^\&\*\+\=\[\]\<\>\|\/]*)\))/gi,
 };
 
 module.exports = function generate(format = "") {

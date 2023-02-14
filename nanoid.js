@@ -7,7 +7,8 @@ const languages = {
 	clean        : 'BCDFGHJKMNPQRSTUVWXYZ2346789',
 	insensitive  : 'bcdfghjkmnpqrstuvwxyzBCDFGHJKMNPQRSTUVWXYZ2346789',
 	lower        : 'bcdfghjkmnpqrstuvwxyz2346789',
-	alphanumeric : 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+	alphanumeric : 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+	symbols      : 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789~!@#$%^&*()_-=+{}[]|:;<>,.?',
 };
 
 module.exports = nanoid;
@@ -17,6 +18,7 @@ Object.entries(languages)
 		nanoid[key] = generate(language);
 	});
 
+nanoid['unicode'] = (length) => generateStringFromUnicode(Number.parseInt(length, 10));
 nanoid['custom'] = (length, language) => generateStringFromLanguage(Number.parseInt(length, 10), language);
 
 function nanoid(length = defaultLength) {
@@ -36,6 +38,15 @@ function generateStringFromLanguage(length = 8, lang = '0123456789ABCDEF') {
 		str += lang[csprng(0, lang.length - 1)];
 
 	return str;
+}
+
+function generateStringFromUnicode(length = 8) {
+	let arr = [];
+
+	while (arr.length < length)
+		arr.push(csprng(0, 0xFFFF));
+
+	return String.fromCharCode(...arr);
 }
 
 
