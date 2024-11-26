@@ -19,117 +19,138 @@ program
 	.option('--pipe', 'Print pipe safe', !process.stdout.isTTY)
 	.option('--no-pipe', 'Prints with trailing newline')
 	.option('--language <string>', 'Custom Language string to use')
-	.option('--format <string>', 'Format String for complex generation');
+	.option('--format <string>', 'Format String for complex generation')
+	.option('-FP, --format-pipe', 'Format String provided via stdin');
 
 program.addHelpText('after',helptext.helpTextAfterGenerators + helptext.helpTextAfterFmt);
 
 program.parse();
 
-const options = program.opts();
+main(program).catch(error => console.error(error));
 
-if (options.language)
-	options.type = 'custom';
-if (options.format)
-	options.type = 'fmt';
+async function main(program) {
+	const options = program.opts();
 
-let generator = null;
-
-switch (options.type) {
-	case 'hex':
-	case 'h':
-		generator = nanoid.lhex;
-		break;
-	case 'HEX':
-	case 'H':
-		generator = nanoid.hex;
-		break;
-	case 'alphanumeric':
-	case 'alpha':
-	case 'clean':
-	case 'a':
-	case 'lower':
-	case 'll':
-	case 'l':
-		generator = nanoid.lower;
-		break;
-	case 'insensitive':
-	case 'insen':
-	case 'i':
-		generator = nanoid.insensitive;
-		break;
-	case 'base36':
-	case '36':
-		generator = nanoid.alphanumeric;
-		break;
-	case 'digits':
-	case 'd':
-		generator = nanoid.numeric;
-		break;
-	case 'upper':
-		generator = nanoid.clean;
-		break;
-	case 'unicode':
-	case 'uni':
-		generator = nanoid.unicode;
-		break;
-	case 'symbols':
-	case 'sym':
-		generator = nanoid.symbols;
-		break;
-	case 'uuidv4':
-	case 'uuid':
-	case 'u':
-		options.prefix = '';
-		options.postfix = '';
-		generator = () => uuid.v4();
-		break;
-	case 'sha256':
-	case 'sha':
-		generator = () => sha();
-		break;
-	case 'name':
-	case 'n':
-		generator = () => nameGen();
-		break;
-	case 'firstname':
-	case 'first':
-	case 'fn':
-		generator = () => nameGen.first();
-		break;
-	case 'lastname':
-	case 'last':
-	case 'surname':
-	case 'ln':
-		generator = () => nameGen.last();
-		break;
-
-	case 'custom':
-		generator = l => nanoid.custom(l, expandLanguage(options.language));
-		break;
-	case 'fmt':
-		if (options.format)
-			generator = () => fmtGen(options.format);
-		break;
-	default:
-		console.warn(`Unknown generator '${options.type}'`);
-		break;
-}
-
-if (generator) {
-	const list = [];
-
-	for (let i = 0; i < options.count; i++) {
-		list.push(`${options.prefix}${generator(options.length)}${options.postfix}`);
+	// Determine Options
+	if (options.language)
+		options.type = 'custom';
+	if (options.format)
+		options.type = 'fmt';
+	if (options.formatPipe) {
+		options.type = 'fmt';
+		options.format = await promiseStdin();
 	}
 
-	list.forEach((item, i) => {
+	// Determine Generator
+	let generator = null;
+
+	switch (options.type) {
+		case 'hex':
+		case 'h':
+			generator = nanoid.lhex;
+			break;
+		case 'HEX':
+		case 'H':
+			generator = nanoid.hex;
+			break;
+		case 'alphanumeric':
+		case 'alpha':
+		case 'clean':
+		case 'a':
+		case 'lower':
+		case 'll':
+		case 'l':
+			generator = nanoid.lower;
+			break;
+		case 'insensitive':
+		case 'insen':
+		case 'i':
+			generator = nanoid.insensitive;
+			break;
+		case 'base36':
+		case '36':
+			generator = nanoid.alphanumeric;
+			break;
+		case 'digits':
+		case 'd':
+			generator = nanoid.numeric;
+			break;
+		case 'upper':
+			generator = nanoid.clean;
+			break;
+		case 'unicode':
+		case 'uni':
+			generator = nanoid.unicode;
+			break;
+		case 'symbols':
+		case 'sym':
+			generator = nanoid.symbols;
+			break;
+		case 'uuidv4':
+		case 'uuid':
+		case 'u':
+			options.prefix = '';
+			options.postfix = '';
+			generator = () => uuid.v4();
+			break;
+		case 'sha256':
+		case 'sha':
+			generator = () => sha();
+			break;
+		case 'name':
+		case 'n':
+			generator = () => nameGen();
+			break;
+		case 'firstname':
+		case 'first':
+		case 'fn':
+			generator = () => nameGen.first();
+			break;
+		case 'lastname':
+		case 'last':
+		case 'surname':
+		case 'ln':
+			generator = () => nameGen.last();
+			break;
+		case 'custom':
+			generator = l => nanoid.custom(l, expandLanguage(options.language));
+			break;
+		case 'fmt':
+			if (options.format)
+				generator = () => fmtGen(options.format);
+			break;
+		default:
+			console.warn(`Unknown generator '${options.type}'`);
+			break;
+	}
+
+	if (!generator) { return; }
+
+	const generate = () => `${options.prefix}${generator(options.length)}${options.postfix}`;
+	for (let i = 0; i < options.count; i++) {
 		if (options.pipe) {
 			if (i > 0) { process.stdout.write('\n'); }
-			process.stdout.write(item);
-		} else {
-			console.log(item);
+				process.stdout.write(generate());
 		}
-	})
+		else
+			console.log(generate());
+	}
+}
+
+async function promiseStdin($encoding = 'utf8') {
+	if (process.stdin.isTTY) {
+		return '';
+	}
+
+	process.stdin.setEncoding($encoding);
+
+	return new Promise((resolve, reject) => {
+		let input = '';
+
+		process.stdin.on('data', (chunk) => { input += chunk; });
+		process.stdin.on('end', () => { resolve(input); });
+		process.stdin.on('error', error => { reject(error); });
+	});
 }
 
 function parseInt(message) {
