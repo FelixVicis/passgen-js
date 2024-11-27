@@ -8,10 +8,11 @@ const generators = {
 	get uuid() { return require('uuid').v4 },
 	get choose() { return require('./choice-generator') },
 	get count() { return require('./counter-generator') },
+	get lorem() { return require('./lorem'); },
 }
 
 const re = {
-	single : /(?<domain>[a-z\-]+)(?:\.(?<fn>[a-z\-]+))?(?:\((?<params>[ a-z0-9\-\_\,\.\?\~\`\!\@\#\$\%\^\&\*\+\=\[\]\<\>\|\/]*)\))/gi,
+	single : /(?<domain>[a-z][a-z\-]*)(?:\.(?<fn>[a-z][a-z\-]*))?(?:\((?<params>[ a-z0-9\-\_\,\.\?\~\`\!\@\#\$\%\^\&\*\+\=\[\]\<\>\|\/]*)\))/gi,
 };
 
 module.exports = function generate(format = "") {

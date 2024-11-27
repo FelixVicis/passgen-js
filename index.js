@@ -7,6 +7,7 @@ const nanoid = require('./nanoid');
 const uuid = require('uuid');
 const sha = require('./hash');
 const nameGen = require('./names');
+const lorem = require('./lorem');
 const fmtGen = require('./format-generator');
 
 program
@@ -20,7 +21,8 @@ program
 	.option('--no-pipe', 'Prints with trailing newline')
 	.option('--language <string>', 'Custom Language string to use')
 	.option('--format <string>', 'Format String for complex generation')
-	.option('-FP, --format-pipe', 'Format String provided via stdin');
+	.option('--format-pipe', 'Format String provided via stdin', !process.stdin.isTTY)
+	.option('--no-format-pipe', 'Do not use stdin as format string');
 
 program.addHelpText('after',helptext.helpTextAfterGenerators + helptext.helpTextAfterFmt);
 
@@ -36,7 +38,7 @@ async function main(program) {
 		options.type = 'custom';
 	if (options.format)
 		options.type = 'fmt';
-	if (options.formatPipe) {
+	if (options.formatPipe && !options.noFormatPipe) {
 		options.type = 'fmt';
 		options.format = await promiseStdin();
 	}
@@ -111,6 +113,9 @@ async function main(program) {
 		case 'surname':
 		case 'ln':
 			generator = () => nameGen.last();
+			break;
+		case 'lorem':
+			generator = (l) => lorem.sentance(l);
 			break;
 		case 'custom':
 			generator = l => nanoid.custom(l, expandLanguage(options.language));
