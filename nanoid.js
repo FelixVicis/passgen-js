@@ -19,7 +19,7 @@ Object.entries(languages)
 	});
 
 nanoid['unicode'] = (length) => generateStringFromUnicode(Number.parseInt(length, 10));
-nanoid['custom'] = (length, language) => generateStringFromLanguage(Number.parseInt(length, 10), language);
+nanoid['custom'] = (length, language) => generateStringFromLanguage(Number.parseInt(length, 10), expandLanguage(language));
 
 function nanoid(length = defaultLength) {
 	return nanoid.hex(Number.parseInt(length));
@@ -47,6 +47,34 @@ function generateStringFromUnicode(length = 8) {
 		arr.push(csprng(0, 0xFFFF));
 
 	return String.fromCharCode(...arr);
+}
+
+function expandLanguage(lang) {
+	return lang.replace(
+		/([A-Za-z0-9])\-([A-Za-z0-9])/g,
+		(match, start, end) => {
+			const startCode = start.charCodeAt(0);
+			const endCode   = end.charCodeAt(0);
+
+			// Must be same character class
+			const sameType =
+				(/[A-Z]/.test(start) && /[A-Z]/.test(end)) ||
+				(/[a-z]/.test(start) && /[a-z]/.test(end)) ||
+				(/[0-9]/.test(start) && /[0-9]/.test(end));
+
+			// Must be ascending
+			if (!sameType || startCode > endCode) {
+				return match;
+			}
+
+			let expanded = '';
+			for (let i = startCode; i <= endCode; i++) {
+				expanded += String.fromCharCode(i);
+			}
+
+			return expanded;
+		}
+	);
 }
 
 
