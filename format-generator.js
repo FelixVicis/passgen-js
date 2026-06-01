@@ -13,13 +13,15 @@ const generators = {
 }
 
 const re = {
-	// Domain should always be a lowercase string and dashes. Addl. It cannot begin with a dash.
-	single : /(?<domain>[a-z][a-z\-]*)(?:\.(?<fn>[a-z][a-z0-9\-]*))?(?:\((?<params>[ a-z0-9\-\_\,\.\?\~\`\!\@\#\$\%\^\&\*\+\=\[\]\<\>\|\/]*)\))/gi,
+	// Domain names stay simple so literals like ID-count(10) do not get swallowed.
+	single : /(?<domain>[a-z][a-z0-9]*)(?:\.(?<fn>[a-z][a-z0-9\-]*))?(?:\((?<params>[ a-z0-9\-\_\,\.\?\~\`\!\@\#\$\%\^\&\*\+\=\[\]\<\>\|\/]*)\))/gi,
 };
 
 module.exports = function generate(format = "") {
 	return replaceSingle(format);
 };
+
+module.exports.generators = generators;
 
 function replaceSingle(input) {
 	const onMatch = ({match, domain, fn, params}) => _getRepl(match, domain, fn, params);
