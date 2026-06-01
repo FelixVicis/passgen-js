@@ -38,8 +38,8 @@ datenow.long = (locale, timeZone, value) => date('long', locale, timeZone, value
 datenow.medium = (locale, timeZone, value) => date('medium', locale, timeZone, value);
 datenow.short = (locale, timeZone, value) => date('short', locale, timeZone, value);
 datenow.iso = iso;
-datenow.stamp = stamp;
-datenow.timestamp = stamp;
+datenow.stamp = () => { return [ datenow.month(2), datenow.day(2), datenow.year(), datenow.hour24(), datenow.minute(), datenow.second() ].join(''); };
+datenow.timestamp = timestamp;
 datenow.unix = unix;
 datenow.year = year;
 datenow.month = month;
@@ -81,7 +81,7 @@ function iso(value = undefined) {
 	return toDate(value).toISOString();
 }
 
-function stamp(value = undefined) {
+function timestamp(value = undefined) {
 	return toDate(value).getTime().toString();
 }
 
