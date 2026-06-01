@@ -9,10 +9,12 @@ const generators = {
 	get choose() { return require('./choice-generator') },
 	get count() { return require('./counter-generator') },
 	get lorem() { return require('./lorem'); },
+	get date() { return require('./dates'); },
 }
 
 const re = {
-	single : /(?<domain>[a-z][a-z\-]*)(?:\.(?<fn>[a-z][a-z\-]*))?(?:\((?<params>[ a-z0-9\-\_\,\.\?\~\`\!\@\#\$\%\^\&\*\+\=\[\]\<\>\|\/]*)\))/gi,
+	// Domain should always be a lowercase string and dashes. Addl. It cannot begin with a dash.
+	single : /(?<domain>[a-z][a-z\-]*)(?:\.(?<fn>[a-z][a-z0-9\-]*))?(?:\((?<params>[ a-z0-9\-\_\,\.\?\~\`\!\@\#\$\%\^\&\*\+\=\[\]\<\>\|\/]*)\))/gi,
 };
 
 module.exports = function generate(format = "") {
