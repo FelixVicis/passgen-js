@@ -3,6 +3,7 @@ const config = require('./package.json');
 const commander = require('commander');
 const program = commander.program;
 const helptext = require('./text.json');
+const completions = require('./completions');
 const fmtGen = require('./format-generator');
 const shortcuts = require('./shortcuts');
 
@@ -18,16 +19,46 @@ program
 	.option('--language <string>', 'Custom Language string to use')
 	.option('--format <string>', 'Format String for complex generation')
 	.option('--format-pipe', 'Format String provided via stdin', !process.stdin.isTTY)
-	.option('--no-format-pipe', 'Do not use stdin as format string');
+	.option('--no-format-pipe', 'Do not use stdin as format string')
+	.option('--install-completions', 'Install bash completions for this user')
+	.addOption(new commander.Option('--completion-name <name>', 'Additional command or alias name for installed completions').argParser(collectList))
+	.addOption(new commander.Option('--completion-data <type>', 'Print shell completion data').hideHelp());
 
 program.addHelpText('after', shortcuts.help() + helptext.helpTextAfterFmt);
 
 program.parse();
 
-main(program).catch(error => console.error(error));
+main(program).catch(error => {
+	console.error(error.message || error);
+	process.exitCode = 1;
+});
 
 async function main(program) {
 	const options = program.opts();
+
+	if (options.installCompletions) {
+		const result = completions.installBash({
+			commandPath:process.argv[1],
+			names:options.completionName,
+		});
+
+		console.log(`Installed bash completions to ${result.paths.join(', ')}`);
+		console.log('Restart your shell or source the file to use them immediately.');
+		return;
+	}
+
+	if (options.completionData) {
+		const values = completions.data(options.completionData, program);
+
+		if (!values) {
+			console.warn(`Unknown completion data '${options.completionData}'`);
+			process.exitCode = 1;
+			return;
+		}
+
+		values.forEach(value => console.log(value));
+		return;
+	}
 
 	// Determine Options
 	if (options.language)
@@ -99,4 +130,8 @@ function parseInt(message) {
 
 		return int;
 	}
+}
+
+function collectList(value, previous = []) {
+	return previous.concat(`${value}`.split(',').map(item => item.trim()).filter(Boolean));
 }
